@@ -19,7 +19,15 @@ const createOrder = asyncWrapper(async (req, res) => {
 
 const getOrder = asyncWrapper(async (req, res) => {
     const deliveryDate = req.body.delivery_date;
-    const orders = await Orders.find({
+    if (Object.keys(req.body).length === 0 || deliveryDate==""){
+        return res.status(401).json({ msg: `Please enter delivery date` });
+    }
+
+    let pattern = /^([0-9]{4})\/([0-9]{2})\/([0-9]{2})$/;
+    if (!pattern.test(deliveryDate)){
+        return res.status(401).json({ msg: `Please enter delivery date in yyyy/mm/dd format` });
+    }
+    const orders = await Orders.findOne({
         delivery_date: deliveryDate
      });
     if (!orders) {
