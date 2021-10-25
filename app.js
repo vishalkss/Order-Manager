@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3000;
 const orders = require("./routes/orders");
+const meeting = require("./routes/meeting");
 const connectDB = require('./db/connect')
 require('dotenv').config();
 const notFound = require('./middleware/not-found')
@@ -22,6 +23,7 @@ start();
 app.use(express.json());
 
 app.use("/api/v1/orders", orders);
+app.use("/api/v1/meeting", meeting);
 
 app.use(notFound);
 app.use(errorHandlerMiddleware);
