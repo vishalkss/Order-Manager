@@ -37,10 +37,43 @@ const getAllMeetings = async(req,res) =>{
     const meeting = await Meeting.find({
         'date': req.body.date
     });
-    if (!meeting) {
-        res.status(401).send("No Meeting exists for the daya");
+    
+    const meetingTimes = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00","17:00","18:00"];
+
+    meeting.forEach(ele=>{
+        function deleteData(data) {
+            data = data + ":00";
+            const index = meetingTimes.indexOf(data);
+            delete meetingTimes[index];
+        }
+        endTimeData = parseInt(ele.end_time)
+        startTimeData = parseInt(ele.start_time);
+        while ((startTimeData <= endTimeData)){
+            deleteData(startTimeData);
+            startTimeData = parseInt(startTimeData) + 1;
+            startTimeData = startTimeData.toString();
+        }
+    })
+    
+    let availableMeetings = meetingTimes.map((ele,index)=>{
+        let diff = parseInt(meetingTimes[index]) - parseInt(meetingTimes[index+1]);
+        if (diff==-1){
+            let d = {};
+            d['date'] = req.body.date;
+            d['start_time'] = meetingTimes[index];
+            d['end_time'] = meetingTimes[index + 1];
+            return d;
+        }
+    })
+
+    availableMeetings = availableMeetings.filter(function (element) {
+        return element !== undefined;
+    });
+
+    if (!availableMeetings) {
+        res.status(401).send("No Meeting available for this day");
     } else {
-        res.status(200).json({ meeting })
+        res.status(200).json({ availableMeetings })
     }
 
 }
