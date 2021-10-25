@@ -5,12 +5,12 @@ const scheduledMeeting = async (req,res) =>{
     const meeting = await Meeting.find({ 'date': req.body.date, $or:[{
         'start_time': {
             $lte: req.body.start_time,
-            // $gte: req.body.end_time
+            $gte: req.body.end_time
         }
     },{
         'end_time': {
             $gte: req.body.start_time,
-            // $lte: req.body.end_time
+            $lte: req.body.end_time
         }
     }] });
 
@@ -19,11 +19,11 @@ const scheduledMeeting = async (req,res) =>{
     }
 
 
-    if(meeting){
-        res.status(401).send("meeting already exists");
-    } else {
+    if(meeting.length==0){
         const data = await Meeting.create(req.body);
-        res.status(200).json({data})
+        res.status(200).json({ data })
+    } else {
+        res.status(401).send("meeting already exists");
     }
 
 }
@@ -105,26 +105,30 @@ const cancelMeeting = async (req, res) => {
         '_id': meetingID
     });
 
-    let currentDate = new Date();
-    let cDay = currentDate.getDate()
-    let cMonth = currentDate.getMonth() + 1
-    let cYear = currentDate.getFullYear()
-    let todayDate = cDay + "/" + cMonth + "/" + cYear;
-    let time = currentDate.getHours() + ":" + currentDate.getMinutes();
-    // console.log(time);
+    if (meeting){
+        let currentDate = new Date();
+        let cDay = currentDate.getDate()
+        let cMonth = currentDate.getMonth() + 1
+        let cYear = currentDate.getFullYear()
+        let todayDate = cDay + "/" + cMonth + "/" + cYear;
+        let time = currentDate.getHours() + ":" + currentDate.getMinutes();
 
-    if (todayDate == meeting.date){
-        if (time > meeting.start_time) {
-            res.status(401).send("Ccouldn't Cancel meetings if the meeting has already started");
+        if (todayDate == meeting.date) {
+            if (time > meeting.start_time) {
+                res.status(401).send("Ccouldn't Cancel meetings if the meeting has already started");
+            }
+        } else {
+            const meetingDelete = await Meeting.findOneAndDelete({ '_id': meetingID });
+            if (!meetingDelete) {
+                res.status(401).send("No Meeting exist");
+            } else {
+                res.status(200).send(" Meeting deleted successfully");
+            }
         }
     } else {
-        const meetingDelete = await Meeting.findOneAndDelete({ '_id': meetingID });
-        if (!meetingDelete) {
-            res.status(401).send("No Meeting exist");
-        } else {
-            res.status(200).send(" Meeting deleted successfully");
-        }
+        res.status(401).send("No Meeting exist");
     }
+
 
 }
 
