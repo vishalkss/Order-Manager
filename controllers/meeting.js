@@ -115,14 +115,15 @@ const cancelMeeting = async (req, res) => {
 
     if (todayDate == meeting.date){
         if (time > meeting.start_time) {
-
+            res.status(401).send("Ccouldn't Cancel meetings if the meeting has already started");
         }
-    }
-    // console.log("time", year);
-    if (!meeting) {
-        res.status(401).send("No Meeting exist");
     } else {
-        res.status(200).json({ meeting })
+        const meetingDelete = await Meeting.findOneAndDelete({ '_id': meetingID });
+        if (!meetingDelete) {
+            res.status(401).send("No Meeting exist");
+        } else {
+            res.status(200).send(" Meeting deleted successfully");
+        }
     }
 
 }
