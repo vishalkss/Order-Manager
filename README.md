@@ -34,3 +34,9 @@ Enpoint : /orders/create
     
 5. Delete an order with Order ID
     Endpoint : /orders/delete
+
+
+
+For Meeting schedular ->
+
+Postman Collection link ->https://go.postman.co/workspace/My-Workspace~e9130c7e-c703-4b99-8993-ef42f5d30c38/collection/8593174-6486a9f6-3285-454b-90e3-ff490d5a54a2Node JS:
