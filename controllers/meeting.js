@@ -14,6 +14,10 @@ const scheduledMeeting = async (req,res) =>{
         }
     }] });
 
+    if (req.body.start_time < "09:00" || req.body.start_time > "18:00" || req.body.end_time < "09:00" || req.body.end_time > "18:00"){
+        res.status(401).send("meeting can only be scheduled between 09:00 and 18:00");
+    }
+
 
     if(meeting){
         res.status(401).send("meeting already exists");
@@ -45,6 +49,10 @@ const getAllMeetings = async(req,res) =>{
 const updateMeeting = async (req, res) => {
 
     const { id: meetingID } = req.params;
+
+    if (req.body.start_time < "09:00" || req.body.start_time > "18:00" || req.body.end_time < "09:00" || req.body.end_time > "18:00") {
+        res.status(401).send("meeting can only be scheduled between 09:00 and 18:00");
+    }
     const meeting = await Meeting.findOneAndUpdate({
         '_id': meetingID
     },req.body);
